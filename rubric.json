@@ -1,0 +1,14 @@
+{
+  "rubric": [
+    { "score": 1, "label": "Not Interested", "band": "Need Attention", "description": "Supervisor describes disengagement, no effort" },
+    { "score": 2, "label": "Lacks Discipline", "band": "Need Attention", "description": "Works only when I tell him, no self-initiative" },
+    { "score": 3, "label": "Motivated but Directionless", "band": "Need Attention", "description": "Enthusiasm + confusion" },
+    { "score": 4, "label": "Careless and Inconsistent", "band": "Productivity", "description": "Output exists but quality varies" },
+    { "score": 5, "label": "Consistent Performer", "band": "Productivity", "description": "Reliable task execution" },
+    { "score": 6, "label": "Reliable and Productive", "band": "Productivity", "description": "High trust, executes assigned tasks flawlessly" },
+    { "score": 7, "label": "Problem Identifier", "band": "Performance", "description": "Spots patterns and identifies problems independently" },
+    { "score": 8, "label": "Problem Solver", "band": "Performance", "description": "Identifies AND fixes problems with systems" },
+    { "score": 9, "label": "Innovative and Experimental", "band": "Performance", "description": "Builds new tools, tests approaches, creates MVPs" },
+    { "score": 10, "label": "Exceptional Performer", "band": "Performance", "description": "Flawless execution at scale, others learn from them" }
+  ]
+}

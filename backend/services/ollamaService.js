@@ -9,7 +9,7 @@ export default async function callOllama(prompt, systemPrompt = "") {
             format: 'json',
             stream: false,
             options: {
-                temperature: 0.1, 
+                temperature: 0.1,
             }
         })
     });

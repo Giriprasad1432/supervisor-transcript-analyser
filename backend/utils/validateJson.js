@@ -1,18 +1,11 @@
 export function isValidJson(data) {
-
   return (
     data &&
+    data.score &&
+    typeof data.score.value === "number" &&
     Array.isArray(data.evidence) &&
-    data.evidence.every(
-      item =>
-        typeof item.quote === "string" &&
-        typeof item.sentiment === "string"
-    ) &&
-    typeof data.score === "number" &&
-    typeof data.justification === "string" &&
+    Array.isArray(data.kpiMapping) &&
     Array.isArray(data.gaps) &&
-    Array.isArray(data.follow_up_questions) &&
-    data.gaps.length === data.follow_up_questions.length
+    Array.isArray(data.followUpQuestions)
   );
-
 }
