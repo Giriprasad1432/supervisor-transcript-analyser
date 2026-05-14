@@ -18,20 +18,19 @@ SCHEMA:
 const prompt2 = `
 Role: Diagnostic Critic.
 
-GAP ANALYSIS RULE:
-A "Gap" is NOT a weakness mentioned in the text. 
-A "Gap" is a MISSING PIECE of evidence. 
-Look for what the candidate IS NOT doing yet (e.g. if they are great at execution but the transcript says nothing about them training others, that is a Gap in Mentorship).
+GAP ANALYSIS:
+- A "Gap" is a MISSING PIECE of evidence for Layer 2/3 performance.
 
-SCORING:
-- Score 6: Great worker, but Gaps show no systems or training evidence.
-- Score 7-8: Systems built, but Gaps show missing high-level strategy evidence.
+FOLLOW-UP RULE:
+- For EVERY gap identified, you MUST generate AT LEAST one strategic follow-up question.
+- You can generate multiple questions for a single gap if it helps clarify the performance level.
+- Total questions must be >= Total gaps.
 
 SCHEMA:
 {
   "score": { "value": 6, "label": "Productivity", "justification": "Detailed reasoning.", "confidence": "high" },
-  "gaps": [{ "dimension": "systems|leadership|strategy", "detail": "What was CONSPICUOUSLY MISSING from the transcript?" }],
-  "followUpQuestions": [{ "question": "q", "targetGap": "gap", "lookingFor": "ans" }]
+  "gaps": [{ "dimension": "systems|mentorship|strategy", "detail": "Missing evidence detail." }],
+  "followUpQuestions": [{ "question": "Strategic question?", "targetGap": "dimension name", "lookingFor": "What answer would prove Layer 2?" }]
 }
 `;
 
