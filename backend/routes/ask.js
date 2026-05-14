@@ -4,24 +4,41 @@ import { callOllama } from "../services/ollamaService.js";
 const router = express.Router();
 
 router.post("/", async (req, res) => {
-  try {
-    const result = await callOllama(req.body.prompt);
 
-    let parsed;
+  let attempts = 2;
+
+  while (attempts > 0) {
+
     try {
-      parsed = JSON.parse(result);
-    } catch (e) {
-      return res.status(500).json({
-        error: "Invalid JSON from model",
-        result
-      });
+
+      const result = await callOllama(req.body.prompt);
+
+      let parsed;
+
+      try {
+        parsed = JSON.parse(result);
+      } catch (e) {
+        attempts--;
+        continue;
+      }
+
+      if (!isValidJson(parsed)) {
+        attempts--;
+        continue;
+      }
+
+      return res.json(parsed);
+
+    } catch (err) {
+
+      attempts--;
     }
-
-    res.json(parsed);
-
-  } catch (err) {
-    res.status(500).json({ error: "Ollama failed" });
   }
+
+  res.status(500).json({
+    error: "Ollama failed after retries"
+  });
+
 });
 
 export default router;
