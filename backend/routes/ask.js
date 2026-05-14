@@ -48,11 +48,9 @@ router.post("/", async (req, res) => {
   if (!transcript) return res.status(400).json({ error: "No transcript provided." });
 
   try {
-    // Phase 1
     const result1 = await callOllama(transcript, prompt1);
     const factData = JSON.parse(result1);
 
-    // Phase 2
     const input2 = `Transcript: ${transcript}\n\nEvidence: ${JSON.stringify(factData.evidence)}`;
     const result2 = await callOllama(input2, prompt2);
     const diagnosticData = JSON.parse(result2);
