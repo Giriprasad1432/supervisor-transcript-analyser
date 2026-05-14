@@ -1,14 +1,24 @@
-export default async function callOllama(prompt) {
-    const response = await fetch('http://localhost:11434/api/generate',
-        {
-            method: 'POST',
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ model: 'llama3.2', prompt, stream: false })
+export default async function callOllama(prompt, systemPrompt = "") {
+    const response = await fetch('http://localhost:11434/api/generate', {
+        method: 'POST',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            model: 'llama3.2',
+            prompt: prompt,
+            system: systemPrompt,
+            format: 'json',
+            stream: false,
+            options: {
+                temperature: 0.1, 
+            }
         })
+    });
+
     if (!response.ok) {
         const errorText = await response.text();
         throw new Error(`Ollama API failed (${response.status}): ${errorText}`);
     }
+
     const data = await response.json();
     return data.response;
 }
