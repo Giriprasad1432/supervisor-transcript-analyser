@@ -2,8 +2,9 @@ import express from "express";
 import callOllama from "../services/ollamaService.js";
 import { isValidJson } from "../utils/validateJson.js";
 
-// PHASE 1: Focuses on raw facts and KPI mapping
-const PROMPT_PHASE_1 = `
+const router = express.Router();
+
+const prompt1 = `
 You are an Evidence Extractor for DeepThought. 
 Pull data from the transcript.
 
@@ -19,8 +20,7 @@ SCHEMA:
 }
 `;
 
-// PHASE 2: Focuses on the diagnostic score and gaps
-const PROMPT_PHASE_2 = `
+const prompt2 = `
 You are the Lead Critic. Use the transcript and the evidence to give a final score.
 
 CRITICAL RULES:
@@ -36,8 +36,6 @@ SCHEMA:
 }
 `;
 
-const router = express.Router();
-
 router.post("/", async (req, res) => {
   const { transcript } = req.body;
   
@@ -46,35 +44,29 @@ router.post("/", async (req, res) => {
   }
 
   try {
-    // Step 1: Fact Extraction
-    console.log("Starting Phase 1...");
-    const result1 = await callOllama(transcript, PROMPT_PHASE_1);
+    // first get the facts
+    const result1 = await callOllama(transcript, prompt1);
     const factData = JSON.parse(result1);
 
-    // Step 2: Diagnostic Evaluation
-    console.log("Starting Phase 2...");
-    const phase2Input = `Transcript: ${transcript}\n\nEvidence: ${JSON.stringify(factData.evidence)}`;
-    const result2 = await callOllama(phase2Input, PROMPT_PHASE_2);
+    // then do the scoring
+    const input2 = `Transcript: ${transcript}\n\nEvidence: ${JSON.stringify(factData.evidence)}`;
+    const result2 = await callOllama(input2, prompt2);
     const diagnosticData = JSON.parse(result2);
 
-    // Combine everything
-    const finalAnalysis = {
+    const finalResult = {
       ...factData,
       ...diagnosticData
     };
 
-    // Final sanity check
-    if (!isValidJson(finalAnalysis)) {
-      return res.status(500).json({ error: "Analysis failed validation check." });
+    if (!isValidJson(finalResult)) {
+      return res.status(500).json({ error: "failed validation" });
     }
 
-    return res.json(finalAnalysis);
+    return res.json(finalResult);
 
   } catch (err) {
-    console.error("Analysis Pipeline Error:", err.message);
-    res.status(500).json({ 
-      error: "Something went wrong during analysis. Please try again." 
-    });
+    console.error(err);
+    res.status(500).json({ error: "Something went wrong" });
   }
 });
 
