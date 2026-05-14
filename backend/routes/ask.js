@@ -39,87 +39,43 @@ SCHEMA:
 const router = express.Router();
 
 router.post("/", async (req, res) => {
-
   const { transcript } = req.body;
-
+  
   if (!transcript) {
-    return res.status(400).json({
-      error: "No transcript provided."
+    return res.status(400).json({ error: "No transcript provided." });
+  }
+
+  try {
+    // Step 1: Fact Extraction
+    console.log("Starting Phase 1...");
+    const result1 = await callOllama(transcript, PROMPT_PHASE_1);
+    const factData = JSON.parse(result1);
+
+    // Step 2: Diagnostic Evaluation
+    console.log("Starting Phase 2...");
+    const phase2Input = `Transcript: ${transcript}\n\nEvidence: ${JSON.stringify(factData.evidence)}`;
+    const result2 = await callOllama(phase2Input, PROMPT_PHASE_2);
+    const diagnosticData = JSON.parse(result2);
+
+    // Combine everything
+    const finalAnalysis = {
+      ...factData,
+      ...diagnosticData
+    };
+
+    // Final sanity check
+    if (!isValidJson(finalAnalysis)) {
+      return res.status(500).json({ error: "Analysis failed validation check." });
+    }
+
+    return res.json(finalAnalysis);
+
+  } catch (err) {
+    console.error("Analysis Pipeline Error:", err.message);
+    res.status(500).json({ 
+      error: "Something went wrong during analysis. Please try again." 
     });
   }
-
-  const userPrompt = `
-Analyse this transcript and return the structured JSON analysis.
-
-Transcript:
-${transcript}
-`;
-
-  let attempts = 3;
-
-  while (attempts > 0) {
-
-    try {
-
-      const result = await callOllama(
-        userPrompt,
-        SYSTEM_PROMPT
-      );
-
-      console.log("Raw Ollama response received.");
-
-      let parsed;
-
-      try {
-
-        parsed = JSON.parse(result);
-
-      } catch (e) {
-
-        console.warn(
-          "JSON Parse failed, retrying...",
-          e.message
-        );
-
-        attempts--;
-        continue;
-      }
-
-      if (!isValidJson(parsed)) {
-
-        console.warn(
-          "JSON Validation failed, retrying..."
-        );
-
-        attempts--;
-        continue;
-      }
-
-      return res.json(parsed);
-
-    } catch (err) {
-
-      if (
-        err.code === "ECONNREFUSED" ||
-        err.message?.includes("fetch failed")
-      ) {
-
-        return res.status(503).json({
-          error: "Ollama isn't running. Make sure it's open!"
-        });
-      }
-
-      console.error("Ollama error:", err.message);
-
-      attempts--;
-    }
-  }
-
-  res.status(500).json({
-    error:
-      "Failed to generate a valid analysis after multiple attempts."
-  });
-
 });
 
 export default router;
