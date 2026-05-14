@@ -27,27 +27,17 @@ SCHEMA:
 }
 `;
 
-async function safeCall(prompt, system, retries = 3) {
-  for (let i = 0; i < retries; i++) {
-    try {
-      const response = await callOllama(prompt, system);
-      return JSON.parse(response);
-    } catch (err) {
-      if (i === retries - 1) throw err;
-      console.log(`Retry attempt ${i + 1} failed...`);
-    }
-  }
-}
-
 router.post("/", async (req, res) => {
   const { transcript } = req.body;
   if (!transcript) return res.status(400).json({ error: "No transcript." });
 
   try {
-    const data1 = await safeCall(transcript, prompt1);
+    const res1 = await callOllama(transcript, prompt1);
+    const data1 = JSON.parse(res1);
 
     const input2 = `Transcript: ${transcript}\n\nEvidence: ${JSON.stringify(data1.evidence)}`;
-    const data2 = await safeCall(input2, prompt2);
+    const res2 = await callOllama(input2, prompt2);
+    const data2 = JSON.parse(res2);
 
     const finalResult = {
       score: data2.score,
@@ -65,7 +55,7 @@ router.post("/", async (req, res) => {
 
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Analysis failed after retries" });
+    res.status(500).json({ error: "Analysis failed" });
   }
 });
 
