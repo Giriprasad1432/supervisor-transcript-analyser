@@ -1,10 +1,10 @@
 import express from "express";
-import { callOllama } from "../services/ollamaService.js";
+import callOllama from "../services/ollamaService.js";
+import { isValidJson } from "../utils/validateJson.js";
 
 const router = express.Router();
 
 router.post("/", async (req, res) => {
-
   let attempts = 2;
 
   while (attempts > 0) {
@@ -12,6 +12,7 @@ router.post("/", async (req, res) => {
     try {
 
       const result = await callOllama(req.body.prompt);
+      console.log("Raw Ollama response:", result);
 
       let parsed;
 
@@ -31,12 +32,23 @@ router.post("/", async (req, res) => {
 
     } catch (err) {
 
+      if (
+        err.code === "ECONNREFUSED" ||
+        err.message?.includes("fetch failed")
+      ) {
+        return res.status(503).json({
+          error: "Ollama isn't running. Make sure it's open!"
+        });
+      }
+
+      console.error("Ollama error:", err.message);
+
       attempts--;
     }
   }
 
   res.status(500).json({
-    error: "Ollama failed after retries"
+    error: "Ollama is acting up, couldn't get a good response."
   });
 
 });
