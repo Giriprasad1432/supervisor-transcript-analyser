@@ -5,6 +5,10 @@
     "express": "^5.2.1"
   },
   "scripts": {
-    "server": "node backend/server.js"
+    "server": "node backend/server.js",
+    "dev": "nodemon backend/server.js"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
   }
 }
