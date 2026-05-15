@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Search, FileText, TrendingUp, AlertTriangle, HelpCircle, Loader2, RefreshCcw } from 'lucide-react';
+import { Search, FileText, TrendingUp, AlertTriangle, HelpCircle, Loader2, RefreshCcw, Target } from 'lucide-react';
 
 const samples = {
   karthik: "Karthik is a great worker. He comes on time, leaves on time — actually he stays late most days, I don't ask him to. He's always on the floor. He helps me with production tracking. Earlier I used to maintain everything in my head — how many pieces came off each machine, what's the rejection rate, what's pending for dispatch. Every evening he updates it and sends it to me on WhatsApp. Very useful. He also handles a lot of the coordination. When we have quality complaints from Tier 1 — they send an email, sometimes call directly — Karthik takes the first call. He notes down the complaint, talks to the QC team, and gives me a summary. He did a study on cycle times and suggested we move the deburring station closer to the CNC machines. Good idea. We did it. Saved maybe 10 minutes per batch in material handling. Sometimes he asks too many questions — like he wants to understand everything before doing it. He doesn't really push back. If I tell him to do something, he does it. Even if it's not the best way. I wish he would tell me sometimes, 'Sir, I think we should do it differently.' But maybe he's still new. He'll get there. The workers on the floor know him. He speaks to them in Marathi — that helps.",
@@ -137,6 +137,29 @@ function App() {
                       {result.followUpQuestions.map((q, i) => (
                         <div key={i} className="p-3 bg-emerald-400/5 rounded-lg border border-emerald-400/20 text-sm text-emerald-100 italic">
                           "{q.question}"
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {result.kpiMapping && result.kpiMapping.length > 0 && (
+                  <div>
+                    <h3 className="flex items-center gap-2 text-purple-400 text-xs uppercase tracking-wider font-bold mb-2">
+                      <Target size={16} /> KPI Mapping
+                    </h3>
+                    <div className="grid grid-cols-2 gap-2">
+                      {result.kpiMapping.map((kpi, i) => (
+                        <div key={i} className="p-3 bg-purple-400/5 rounded-lg border border-purple-400/20 text-sm flex flex-col justify-between">
+                          <div>
+                            <p className="font-bold text-purple-300">{kpi.kpi}</p>
+                            <p className="text-xs text-slate-400 mt-1 italic leading-tight">"{kpi.evidence}"</p>
+                          </div>
+                          <div className="mt-2 text-right">
+                            <span className="inline-block px-2 py-0.5 rounded text-[10px] uppercase font-bold bg-slate-800 border border-slate-700 text-slate-300">
+                              {kpi.systemOrPersonal}
+                            </span>
+                          </div>
                         </div>
                       ))}
                     </div>

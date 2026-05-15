@@ -8,9 +8,14 @@ const prompt1 = `
 Identify facts. 
 KPIs: Lead Gen, Lead Conv, Upselling, Cross-selling, NPS, PAT, TAT, Quality.
 
+GUARDRAILS (ANTI-HALLUCINATION):
+- DO NOT invent or paraphrase quotes. You MUST extract exact verbatim sentences from the transcript.
+- If a KPI is not mentioned, DO NOT map it.
+- DO NOT assume positive intent if it's not explicitly stated.
+
 SCHEMA:
 {
-  "evidence": [{ "quote": "actual quote", "signal": "positive", "dimension": "execution", "interpretation": "meaning" }],
+  "evidence": [{ "quote": "actual quote", "signal": "positive|negative|neutral", "dimension": "execution|systems|mentorship", "interpretation": "meaning" }],
   "kpiMapping": [{ "kpi": "Quality", "evidence": "fact", "systemOrPersonal": "personal" }]
 }
 `;
@@ -21,14 +26,20 @@ Role: Diagnostic Critic.
 GAP ANALYSIS:
 - A "Gap" is a MISSING PIECE of evidence for Layer 2/3 performance.
 
+GUARDRAILS (ANTI-HALLUCINATION & SCORING RULES):
+- Base your score ONLY on the provided evidence. DO NOT assume details that are not present.
+- Be highly skeptical. Do not award high scores (8-10) without concrete, undeniable systemic evidence.
+- SCORING CAP: If a Fellow merely executes assigned tasks flawlessly but DOES NOT push back, challenge the status quo, or build independent systems, the MAXIMUM score is 6 ("Reliable and Productive").
+- To score 7+, there MUST be evidence of independent pattern spotting or independent system building.
+- If the evidence is weak, output a lower confidence level.
+
 FOLLOW-UP RULE:
 - For EVERY gap identified, you MUST generate AT LEAST one strategic follow-up question.
-- You can generate multiple questions for a single gap if it helps clarify the performance level.
 - Total questions must be >= Total gaps.
 
 SCHEMA:
 {
-  "score": { "value": 6, "label": "Productivity", "justification": "Detailed reasoning.", "confidence": "high" },
+  "score": { "value": 6, "label": "Productivity", "justification": "Detailed reasoning.", "confidence": "high|medium|low" },
   "gaps": [{ "dimension": "systems|mentorship|strategy", "detail": "Missing evidence detail." }],
   "followUpQuestions": [{ "question": "Strategic question?", "targetGap": "dimension name", "lookingFor": "What answer would prove Layer 2?" }]
 }
