@@ -5,7 +5,8 @@ import { Search, FileText, TrendingUp, AlertTriangle, HelpCircle, Loader2, Refre
 const samples = {
   karthik: "Karthik is a great worker. He comes on time, leaves on time — actually he stays late most days, I don't ask him to. He's always on the floor. He helps me with production tracking. Earlier I used to maintain everything in my head — how many pieces came off each machine, what's the rejection rate, what's pending for dispatch. Every evening he updates it and sends it to me on WhatsApp. Very useful. He also handles a lot of the coordination. When we have quality complaints from Tier 1 — they send an email, sometimes call directly — Karthik takes the first call. He notes down the complaint, talks to the QC team, and gives me a summary. He did a study on cycle times and suggested we move the deburring station closer to the CNC machines. Good idea. We did it. Saved maybe 10 minutes per batch in material handling. Sometimes he asks too many questions — like he wants to understand everything before doing it. He doesn't really push back. If I tell him to do something, he does it. Even if it's not the best way. I wish he would tell me sometimes, 'Sir, I think we should do it differently.' But maybe he's still new. He'll get there. The workers on the floor know him. He speaks to them in Marathi — that helps.",
   meena: "Meena has been with us for six months now. She's... different. When she started, we had a huge problem with the inventory management. We were losing track of raw materials, especially the high-value alloy steels. Meena didn't just 'help' like the others. She spent two weeks just observing, talking to the storekeeper, the logistics guys. Then she built a custom database using Excel and some VBA scripts. Now, we have real-time tracking. If a bar of steel moves from the store to the shop floor, the system knows. It's not just her doing it—the storekeeper now uses the system she built. That's what I like. She builds things that work even when she's not there. She's also very direct. Sometimes too direct. Last week, I told her to prioritize the Bosch order. She looked at the data and told me, 'Sir, if we do that, we miss the deadline for the Siemens order, which has a higher penalty. We should stick to the original schedule.' She was right. I don't always like being corrected, but I need someone who isn't afraid to say no when the data says otherwise. She's already training a junior to take over the inventory system so she can focus on quality control. That's Layer 2 thinking right there.",
-  anil: "Anil is my go-to guy for everything. Honestly, I don't know what I'd do without him. If a machine breaks down at 2 AM, Anil is the one who picks up the phone and drives to the factory. He knows every nut and bolt in this place. Last month, when we had that power surge that fried the controllers on the older CNCs, Anil spent 48 hours straight here, manually resetting the parameters and getting us back online. We only missed our shipment by six hours. That's dedication. He doesn't really use the tracking systems Meena built—he says he prefers to keep it in his logbook. He's got 20 of those logbooks from the last five years. If you want to know what happened on Machine 4 in 2019, he can find it in five minutes. The only problem is... if Anil isn't here, nobody else knows how to fix those old controllers. He hasn't really trained anyone else because he says 'you can't teach 20 years of experience.' He's a legend on the floor, but I worry about what happens when he eventually retires."
+  anil: "Anil is my go-to guy for everything. Honestly, I don't know what I'd do without him. If a machine breaks down at 2 AM, Anil is the one who picks up the phone and drives to the factory. He knows every nut and bolt in this place. Last month, when we had that power surge that fried the controllers on the older CNCs, Anil spent 48 hours straight here, manually resetting the parameters and getting us back online. We only missed our shipment by six hours. That's dedication. He doesn't really use the tracking systems Meena built—he says he prefers to keep it in his logbook. He's got 20 of those logbooks from the last five years. If you want to know what happened on Machine 4 in 2019, he can find it in five minutes. The only problem is... if Anil isn't here, nobody else knows how to fix those old controllers. He hasn't really trained anyone else because he says 'you can't teach 20 years of experience.' He's a legend on the floor, but I worry about what happens when he eventually retires.",
+  rohan: "Rohan is very reliable. He finishes his assigned tasks every day without fail. He never complains about the workload and follows the SOPs exactly as written. He's great at data entry and makes very few mistakes. If I tell him to stay an extra hour to finish a report, he does it with a smile. He's a good team player and gets along with everyone. However, he doesn't really take initiative on new projects unless I specifically ask him. He's perfect for the role he's in right now, but I haven't seen him try to improve any of the existing processes yet. He just does what he's told."
 };
 
 function App() {
@@ -98,9 +99,11 @@ function App() {
             {result && (
               <div className="space-y-6">
                 <div className="flex items-center justify-between p-4 bg-slate-950 rounded-xl border-l-4 border-blue-500">
-                  <div>
-                    <p className="text-slate-400 text-xs uppercase tracking-wider font-bold">Diagnostic Score</p>
-                    <p className="text-3xl font-bold text-blue-400">{result.score.value}/10</p>
+                  <div className="flex gap-4 items-center">
+                    <div>
+                      <p className="text-slate-400 text-xs uppercase tracking-wider font-bold">Diagnostic Score</p>
+                      <p className="text-3xl font-bold text-blue-400">{result.score.value}/10</p>
+                    </div>
                   </div>
                   <div className="text-right">
                     <p className="text-slate-400 text-xs uppercase tracking-wider font-bold">Band</p>
@@ -113,7 +116,7 @@ function App() {
                   <p className="text-slate-300 leading-relaxed text-sm">{result.score.justification}</p>
                 </div>
 
-                {result.gaps.length > 0 && (
+                {result.gaps && result.gaps.length > 0 && (
                   <div>
                     <h3 className="flex items-center gap-2 text-amber-400 text-xs uppercase tracking-wider font-bold mb-2">
                       <AlertTriangle size={16} /> Key Gaps (Missing Evidence)
@@ -128,15 +131,22 @@ function App() {
                   </div>
                 )}
 
-                {result.followUpQuestions.length > 0 && (
+                {result.followUpQuestions && result.followUpQuestions.length > 0 && (
                   <div>
                     <h3 className="flex items-center gap-2 text-emerald-400 text-xs uppercase tracking-wider font-bold mb-2">
                       <HelpCircle size={16} /> Strategic Follow-ups
                     </h3>
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                       {result.followUpQuestions.map((q, i) => (
-                        <div key={i} className="p-3 bg-emerald-400/5 rounded-lg border border-emerald-400/20 text-sm text-emerald-100 italic">
-                          "{q.question}"
+                        <div key={i} className="p-4 bg-emerald-400/5 rounded-xl border border-emerald-400/20 text-sm">
+                          <div className="flex gap-2 mb-2">
+                            <span className="text-emerald-400 shrink-0 font-bold">Q:</span>
+                            <p className="text-emerald-100 italic font-medium leading-relaxed">"{q.question}"</p>
+                          </div>
+                          <div className="pl-6 border-l border-emerald-400/20">
+                            <p className="text-[10px] text-slate-500 uppercase font-bold mb-1">Looking for evidence of:</p>
+                            <p className="text-slate-400 text-xs">{q.lookingFor}</p>
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -148,18 +158,22 @@ function App() {
                     <h3 className="flex items-center gap-2 text-purple-400 text-xs uppercase tracking-wider font-bold mb-2">
                       <Target size={16} /> KPI Mapping
                     </h3>
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       {result.kpiMapping.map((kpi, i) => (
-                        <div key={i} className="p-3 bg-purple-400/5 rounded-lg border border-purple-400/20 text-sm flex flex-col justify-between">
-                          <div>
+                        <div key={i} className="p-3 bg-purple-400/5 rounded-xl border border-purple-400/20 text-sm flex flex-col gap-2">
+                          <div className="flex justify-between items-start">
                             <p className="font-bold text-purple-300">{kpi.kpi}</p>
-                            <p className="text-xs text-slate-400 mt-1 italic leading-tight">"{kpi.evidence}"</p>
-                          </div>
-                          <div className="mt-2 text-right">
-                            <span className="inline-block px-2 py-0.5 rounded text-[10px] uppercase font-bold bg-slate-800 border border-slate-700 text-slate-300">
+                            <span className="px-2 py-0.5 rounded text-[10px] uppercase font-bold bg-slate-800 border border-slate-700 text-slate-300">
                               {kpi.systemOrPersonal}
                             </span>
                           </div>
+                          <p className="text-xs text-slate-400 italic leading-tight">"{kpi.evidence}"</p>
+                          {kpi.reasoning && (
+                            <p className="text-[11px] text-slate-500 border-t border-purple-400/10 pt-2">
+                              <span className="font-bold text-purple-400/60 uppercase text-[9px] mr-1">Reason:</span>
+                              {kpi.reasoning}
+                            </p>
+                          )}
                         </div>
                       ))}
                     </div>
@@ -173,19 +187,33 @@ function App() {
         {result && result.evidence && (
           <section className="mt-8 bg-slate-800 rounded-2xl p-6 border border-slate-700 shadow-xl">
             <h3 className="text-xl font-semibold mb-4">Evidence Matrix</h3>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {result.evidence.map((ev, i) => (
-                <div key={i} className="p-4 bg-slate-950 rounded-xl border border-slate-700 hover:border-slate-500 transition-all">
-                  <p className="text-slate-100 text-sm mb-3 italic">"{ev.quote}"</p>
-                  <div className="flex justify-between items-center">
-                    <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold ${ev.signal === 'positive' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-slate-500/20 text-slate-400'}`}>
-                      {ev.signal}
-                    </span>
-                    <span className="text-[10px] text-slate-500 font-mono font-bold">{ev.dimension}</span>
-                  </div>
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {result.evidence.map((ev, i) => (
+                    <div key={i} className="p-4 bg-slate-950 rounded-xl border border-slate-700 hover:border-blue-500/50 transition-all group">
+                      <p className="text-slate-100 text-sm mb-3 italic">"{ev.quote}"</p>
+                      
+                      {ev.interpretation && (
+                        <p className="text-[11px] text-slate-400 mb-3 line-clamp-2 group-hover:line-clamp-none transition-all">
+                          {ev.interpretation}
+                        </p>
+                      )}
+
+                      <div className="flex justify-between items-center mt-auto pt-3 border-t border-slate-800">
+                        <div className="flex gap-2">
+                          <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold ${ev.signal === 'positive' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'}`}>
+                            {ev.signal}
+                          </span>
+                          {ev.layer && (
+                            <span className="px-2 py-0.5 rounded text-[10px] uppercase font-bold bg-blue-500/20 text-blue-400">
+                              Layer {ev.layer}
+                            </span>
+                          )}
+                        </div>
+                        <span className="text-[10px] text-slate-500 font-mono font-bold uppercase">{ev.dimension}</span>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
           </section>
         )}
       </div>
